@@ -1,4 +1,5 @@
 import Login from './Login';
+import Signup from './Signup';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 
 function App() {
@@ -14,7 +15,7 @@ function App() {
 
         <Routes>
           <Route path="/login" element={<Login />} />
-          {/* <Route path="/signup" element={<Signup />} /> */}
+          <Route path="/signup" element={<Signup />} />
         </Routes>
       </Router>
     </div>
