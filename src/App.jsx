@@ -1,5 +1,5 @@
-import Login from './Login';
-import Signup from './Signup';
+import Login from './Admin/Login';
+import Signup from './Admin/Signup';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 
 function App() {

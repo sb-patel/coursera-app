@@ -8,6 +8,8 @@ const Signup = () => {
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const [validationErrors, setValidationErrors] = useState({});
 
     // Define a schema for the login form
     const signupSchema = z.object({
@@ -18,6 +20,8 @@ const Signup = () => {
     });
 
     const handleSignup = async (e) => {
+        setValidationErrors({});
+        setError('');
         e.preventDefault();
         
         // Add your signup logic here
@@ -26,26 +30,32 @@ const Signup = () => {
         try {
             const signupResult = signupSchema.safeParse({ firstName, lastName, email, password });
             // console.log('Login validation result:', signupResult);
-            if (signupResult.success) {
-                const response = await axios.post('http://localhost:3000/api/v1/user/signup', { firstName, lastName, email, password });
-                console.log('Signup successful:', response.data.message);
-            }
-            else {
-                console.log(signupResult.error);
+            if (!signupResult.success) {
+                const errors = signupResult.error.format();
 
-                // const validationErrors = loginResult.error.issues.map(issue => issue.message);
-                // console.log('Validation errors:', validationErrors);
+                setValidationErrors({
+                    email: errors.email?._errors[0],
+                    password: errors.password?._errors[0],
+                    firstName: errors.firstName?._errors[0],
+                    lastName: errors.lastName?._errors[0],
+                });
+
+                return;
             }
+            const response = await axios.post('http://localhost:3000/api/v1/admin/signup', { firstName, lastName, email, password });
+            console.log('Signup successful:', response.data.message);
+
         }
         catch (error) {
-            console.log(error);
-            setError('Invalid Name, email or password. Please try again.'); // You can customize the error message based on your API response
+            console.log(error.response.data.message);
+            setError(error.response.data.message);
+            // setError('Invalid Name, email or password. Please try again.'); // You can customize the error message based on your API response
         }
     };
 
     return (
         <div style={styles.container}>
-            <h2>Sign Up</h2>
+            <h2>Admin Sign Up</h2>
             <form style={styles.form}>
                 <label>First Name:</label>
                 <input
@@ -53,30 +63,33 @@ const Signup = () => {
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
                 />
+                {validationErrors.firstName && <p style={{ color: 'red' }}>{validationErrors.firstName}</p>}
                 <label>Last Name:</label>
                 <input
                     type="text"
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
                 />
+                {validationErrors.lastName && <p style={{ color: 'red' }}>{validationErrors.lastName}</p>}
                 <label>Email:</label>
                 <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                 />
-
+                {validationErrors.email && <p style={{ color: 'red' }}>{validationErrors.email}</p>}
                 <label>Password:</label>
                 <input
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                 />
-
+                {validationErrors.password && <p style={{ color: 'red' }}>{validationErrors.password}</p>}
                 <button type="button" onClick={handleSignup}>
                     Sign Up
                 </button>
             </form>
+            {error && <p style={{ color: 'red' }}>{error}</p>}
         </div>
     );
 };
