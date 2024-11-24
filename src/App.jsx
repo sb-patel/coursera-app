@@ -1,34 +1,35 @@
 import Login from './Admin/Login';
 import Signup from './Admin/Signup';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import HomePage from './Admin/HomePage';
+
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { createContext, useState } from 'react';
+import Navbar from './Admin/Navbar';
+
+// Create an Auth Context to share login status
+export const AuthContext = createContext();
 
 function App() {
-  return (
-    <div>
-      <p>Course Selling Application</p>
-      <Router>
-        <div style={styles.navbar}>
-          <Link to="/login">Login</Link>
-          <Link to="/signup">Sign Up</Link>
-        </div>
-        <hr />
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-        </Routes>
-      </Router>
-    </div>
+  return (
+    <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn }}>
+      <div>
+        <p>Course Selling Application</p>
+        <Router>
+          <Navbar></Navbar>
+
+          <hr />
+
+          <Routes>
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/home" element={<HomePage />} />
+          </Routes>
+        </Router>
+      </div>
+    </AuthContext.Provider>
   );
 }
-
-const styles = {
-  navbar: {
-    display: 'flex',
-    justifyContent: 'space-around',
-    padding: '10px',
-    background: '#eee',
-  },
-};
 
 export default App

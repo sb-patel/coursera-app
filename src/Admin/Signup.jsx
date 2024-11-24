@@ -1,7 +1,9 @@
 // Signup.js
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { z } from 'zod';
 import axios  from 'axios';
+import { AuthContext } from '../App';
+import { useNavigate } from 'react-router-dom';
 
 const Signup = () => {
     const [firstName, setFirstName] = useState('');
@@ -10,6 +12,8 @@ const Signup = () => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [validationErrors, setValidationErrors] = useState({});
+    const { setIsLoggedIn } = useContext(AuthContext);
+    const navigate = useNavigate();
 
     // Define a schema for the login form
     const signupSchema = z.object({
@@ -44,6 +48,9 @@ const Signup = () => {
             }
             const response = await axios.post('http://localhost:3000/api/v1/admin/signup', { firstName, lastName, email, password });
             console.log('Signup successful:', response.data.message);
+
+            setIsLoggedIn(true);
+            navigate('/home');
 
         }
         catch (error) {

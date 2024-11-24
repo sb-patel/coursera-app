@@ -1,13 +1,17 @@
 // Login.js
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import axios from 'axios';
 import { z } from 'zod';
+import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../App';
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [validationErrors, setValidationErrors] = useState({});
+    const navigate = useNavigate();
+    const { setIsLoggedIn } = useContext(AuthContext);
 
     // Define a schema for the login form
     const loginSchema = z.object({
@@ -39,11 +43,17 @@ const Login = () => {
             console.log('Login successful:', response.data);
             console.log('Login successful:', response.data.message);
             console.log('Login successful:', response.data.token);
+
+            localStorage.setItem('token',response.data.token);
+
+            setIsLoggedIn(true);
+            navigate("/home");
         }
         catch (error) {
             if (error.response && error.response.status === 401) {
                 setError('Invalid email or password');
-            } else {
+            }
+            else {
                 setError('An error occurred. Please try again later.');
             }
         }
