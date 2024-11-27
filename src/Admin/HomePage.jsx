@@ -2,8 +2,6 @@ import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../App";
 import axios from "axios";
 
-
-
 const HomePage = () => {
     const { isLoggedIn } = useContext(AuthContext);
 
@@ -51,9 +49,12 @@ const HomePage = () => {
             // Update the course in the state
             setCourses((prevCourses) =>
                 prevCourses.map((course) =>
-                    course.id === id ? { ...course, ...response.data.course } : course
+                    course._id === id ? { ...course, ...response.data.course } : course
                 )
             );
+
+            console.log('received data');
+            console.log(courses);
 
             // Clear edit state
             setEditCourse(null);
