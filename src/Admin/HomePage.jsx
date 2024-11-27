@@ -53,13 +53,20 @@ const HomePage = () => {
                 )
             );
 
-            console.log('received data');
-            console.log(courses);
-
             // Clear edit state
             setEditCourse(null);
-        } catch (err) {
-            setServerError(error.response?.data?.message || "Failed to update course.");
+            setServerError("");
+        } catch (error) {
+            if(error.response && error.response.data && error.response.data.error){
+                const combinedMessage = error.response.data.error
+                                        .map((e) => e.message)
+                                        .join("\n");
+
+                setServerError(combinedMessage);
+            }
+            else{
+                setServerError("Failed to update course.");
+            }
         }
     };
 
@@ -106,7 +113,7 @@ const HomePage = () => {
         <div>
             <p>This is Admin Home Page !</p>
             <h2>Your Courses</h2>
-            {serverError ? (<p>serverError</p>) : ("")}
+            {serverError ? (<p>{serverError}</p>) : ("")}
 
             {courses.length === 0 ? (
                 <p>No courses found. Create one to get started!</p>
