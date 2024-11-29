@@ -10,6 +10,13 @@ const HomePage = () => {
     }
 
     const [courses, setCourses] = useState([]);
+    const [newCourse, setNewCourse] = useState({
+        title: "",
+        description: "",
+        price: "",
+        imageUrl: "",
+        creatorId: "",
+    });
     const [editCourse, setEditCourse] = useState(null);
     const [error, setError] = useState("");
     const [serverError, setServerError] = useState("");
@@ -57,14 +64,14 @@ const HomePage = () => {
             setEditCourse(null);
             setServerError("");
         } catch (error) {
-            if(error.response && error.response.data && error.response.data.error){
+            if (error.response && error.response.data && error.response.data.error) {
                 const combinedMessage = error.response.data.error
-                                        .map((e) => e.message)
-                                        .join("\n");
+                    .map((e) => e.message)
+                    .join("\n");
 
                 setServerError(combinedMessage);
             }
-            else{
+            else {
                 setServerError("Failed to update course.");
             }
         }
@@ -77,6 +84,41 @@ const HomePage = () => {
     const cancleEdit = () => {
         setEditCourse(null);
     }
+
+    const handleChange = (e) => {
+        setNewCourse({ ...newCourse, [e.target.name]: e.target.value });
+    }
+
+    const handleAddCourse = async (e) => {
+        e.preventDefault();
+        const token = localStorage.getItem("token");
+
+        try {
+            const response = await axios.post("http://localhost:3000/api/v1/admin/course", {
+                ...newCourse,
+                price: Number(newCourse.price), // Ensure price is a number
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
+            })
+            
+            setCourses((prevCourses) => [...prevCourses, response.data.course]);
+            setNewCourse({ title: "", description: "", price: "", imageUrl: "" });
+        }
+        catch (error) {
+            if (error.response && error.response.data && error.response.data.error) {
+                const combinedMessage = error.response.data.error
+                    .map((e) => e.message)
+                    .join("\n");
+
+                setServerError(combinedMessage);
+            }
+            else {
+                setServerError("Failed to add course.");
+            }
+        }
+    };
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -112,6 +154,42 @@ const HomePage = () => {
     return (
         <div>
             <p>This is Admin Home Page !</p>
+            <form onSubmit={handleAddCourse}>
+                <input
+                    type="text"
+                    name="title"
+                    placeholder="Course Title"
+                    value={newCourse.title}
+                    onChange={handleChange}
+                    required
+                />
+                <textarea
+                    name="description"
+                    placeholder="Course Description"
+                    value={newCourse.description}
+                    onChange={handleChange}
+                    required
+                />
+                <input
+                    type="number"
+                    name="price"
+                    placeholder="Price"
+                    value={newCourse.price}
+                    onChange={handleChange}
+                    required
+                />
+                <input
+                    type="text"
+                    name="imageUrl"
+                    placeholder="Course Image"
+                    value={newCourse.imageUrl}
+                    onChange={handleChange}
+                    required
+                />
+                <button type="submit">Add Course</button>
+            </form>
+
+            <hr />
             <h2>Your Courses</h2>
             {serverError ? (<p>{serverError}</p>) : ("")}
 
