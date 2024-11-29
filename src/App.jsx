@@ -3,7 +3,7 @@ import Signup from './Admin/Signup';
 import HomePage from './Admin/HomePage';
 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { createContext, useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
 import Navbar from './Admin/Navbar';
 
 // Create an Auth Context to share login status
@@ -11,6 +11,14 @@ export const AuthContext = createContext();
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    // Check for token in localStorage on app load
+    const token = localStorage.getItem("token");
+    if (token) {
+      setIsLoggedIn(true);
+    }
+  }, []);
 
   return (
     <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn }}>
