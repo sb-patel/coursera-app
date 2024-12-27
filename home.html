@@ -45,17 +45,17 @@
     <!-- Main Categories Navbar -->
     <section class="bg-white shadow-md py-4">
         <div class="container mx-auto flex items-center space-x-6 overflow-x-auto scrollbar-hide">
-            <a href="#" class="main-category text-gray-700 hover:text-blue-600 font-medium"
-                onclick="showSubcategories('Data Science')">Data Science</a>
-            <a href="#" class="main-category text-gray-700 hover:text-blue-600 font-medium"
+            <a href="#" class="category-link text-gray-700 hover:text-blue-600 font-medium"
+                onclick="showSubcategories('Data Science')" role="button" aria-label="Data Science Category">Data Science</a>
+            <a href="#" class="category-link text-gray-700 hover:text-blue-600 font-medium"
                 onclick="showSubcategories('Web Development')">Web Development</a>
-            <a href="#" class="main-category text-gray-700 hover:text-blue-600 font-medium"
+            <a href="#" class="category-link text-gray-700 hover:text-blue-600 font-medium"
                 onclick="showSubcategories('Leadership')">Leadership</a>
-            <a href="#" class="main-category text-gray-700 hover:text-blue-600 font-medium"
+            <a href="#" class="category-link text-gray-700 hover:text-blue-600 font-medium"
                 onclick="showSubcategories('IT Certifications')">IT Certifications</a>
-            <a href="#" class="main-category text-gray-700 hover:text-blue-600 font-medium"
+            <a href="#" class="category-link text-gray-700 hover:text-blue-600 font-medium"
                 onclick="showSubcategories('Communication')">Communication</a>
-            <a href="#" class="main-category text-gray-700 hover:text-blue-600 font-medium"
+            <a href="#" class="category-link text-gray-700 hover:text-blue-600 font-medium"
                 onclick="showSubcategories('Business Analytics')">Business Analytics</a>
         </div>
     </section>
@@ -64,21 +64,11 @@
     <!-- Subcategories Section -->
     <section class="py-12 relative">
         <div class="container mx-auto relative">
-            <h2 class="text-2xl font-bold text-gray-800 mb-6">Subcategories</h2>
             <div class="flex space-x-4 scroll-hidden" id="subcategoriesContainer">
-                <!-- <div class="flex-shrink-0 bg-white shadow-md rounded-full px-6 py-3 text-center">
-                    <h3 class="font-semibold text-gray-700">ChatGPT</h3>
-                    <p class="text-sm text-gray-500">3M+ learners</p>
-                </div>
-                <div class="flex-shrink-0 bg-white shadow-md rounded-full px-6 py-3 text-center">
-                    <h3 class="font-semibold text-gray-700">Data Science</h3>
-                    <p class="text-sm text-gray-500">7M+ learners</p>
-                </div> -->
-                <!-- Add more subcategories as needed -->
             </div>
             <button
                 class="absolute top-1/2 left-4 transform -translate-y-1/2 bg-white border border-gray-300 shadow-md rounded-full p-2 hover:bg-gray-100"
-                onclick="scrollSubcategories(-1)">
+                onclick="scrollSubcategories(-1)" aria-label="Scroll Subcategories Left">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="w-6 h-6 text-gray-600">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
@@ -158,7 +148,7 @@
         container.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
     }
 
-    const mainCategories = document.querySelectorAll('.main-category');
+    const mainCategories = document.querySelectorAll('.category-link');
 
     const subcategoriesContainer = document.getElementById('subcategoriesContainer');
 
@@ -176,11 +166,16 @@
             event.preventDefault(); // Prevent default behavior of <a> tag
 
             // Remove active class from all categories
-            mainCategories.forEach(cat => cat.classList.remove('text-blue-600', 'font-bold'));
+            // mainCategories.forEach(cat => cat.classList.remove('text-blue-600', 'font-bold', 'text-gray-700'));
+
+            mainCategories.forEach((cat) => {
+                cat.classList.remove('text-blue-600', 'font-bold');
+                cat.classList.add('text-gray-700');
+            });
 
             // Add active class to the clicked category
-            // category.classList.remove('text-gray-700');
             category.classList.add('text-blue-600', 'font-bold');
+            category.classList.remove('text-gray-700');
 
             // Display relevant subcategories
             const selectedCategory = category.textContent.trim();
@@ -208,6 +203,7 @@
     document.addEventListener('DOMContentLoaded', () => {
         const defaultCategory = mainCategories[0];
         defaultCategory.classList.add('text-blue-600', 'font-bold');
+        defaultCategory.classList.remove('text-gray-700');
         showSubcategories(defaultCategory.textContent.trim());
     });
 </script>

@@ -1,43 +1,20 @@
-import Login from './Admin/Login';
-import Signup from './Admin/Signup';
-import HomePage from './Admin/HomePage';
+import React from 'react';
+import Menu from './Website/Menu';
+import HomePageSlider from './Website/HomePageSlider';
+import CategorySection from './Website/CategorySection';
+import Courses from './Website/Courses';
+import Footer from './Website/Footer';
 
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { createContext, useEffect, useState } from 'react';
-import Navbar from './Admin/Navbar';
+const App = () => {
+    return (
+        <div className="bg-gray-50 font-sans">
+            <Menu />
+            <HomePageSlider />
+            <CategorySection />
+            <Courses />
+            <Footer />
+        </div>
+    );
+};
 
-// Create an Auth Context to share login status
-export const AuthContext = createContext();
-
-function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  useEffect(() => {
-    // Check for token in localStorage on app load
-    const token = localStorage.getItem("token");
-    if (token) {
-      setIsLoggedIn(true);
-    }
-  }, []);
-
-  return (
-    <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn }}>
-      <div>
-        <p>Course Selling Application</p>
-        <Router>
-          <Navbar></Navbar>
-
-          <hr />
-
-          <Routes>
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/home" element={<HomePage />} />
-          </Routes>
-        </Router>
-      </div>
-    </AuthContext.Provider>
-  );
-}
-
-export default App
+export default App;
