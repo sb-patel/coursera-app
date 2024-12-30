@@ -6,7 +6,11 @@ const Courses = () => {
 
     useEffect(() => {
         // Fetch courses from API
-        axios.get('/api/getCourses').then((response) => setCourses(response.data));
+        axios.get(
+            'http://localhost:3000/api/v1/course/list').
+            then((response) => {
+                setCourses(response.data.data)
+            });
     }, []);
 
     return (
