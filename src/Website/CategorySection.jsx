@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const CategorySection = () => {
+const CategorySection = ({ setCourses }) => {
     const [categories, setCategories] = useState([]);
     const [subcategories, setSubcategories] = useState([]);
     const [activeCategory, setActiveCategory] = useState(null);
+    const [activeSubCategory, setActiveSubCategory] = useState(null);
     const token = localStorage.getItem("token");
 
 
@@ -13,24 +14,39 @@ const CategorySection = () => {
         axios.get('http://localhost:3000/api/v1/category').
             then((response) => {
                 setCategories(response.data.data);
-                if (response.data.length > 0) {
-                    setActiveCategory(response.data[0]._id);
-                    fetchSubcategories(response.data[0]._id);
+                if (response.data.data.length > 0) {
+                    setActiveCategory(response.data.data[0]._id);
+                    fetchSubcategories(response.data.data[0]._id);
                 }
             });
     }, []);
 
     const fetchSubcategories = (categoryId) => {
-        axios
-            .get(`http://localhost:3000/api/v1/subcategory/cat_id/${categoryId}`)
-            .then((response) => {
+        axios.get(`http://localhost:3000/api/v1/category/${categoryId}/subcategories`).
+            then((response) => {
                 setSubcategories(response.data.data)
+                if(response.data.data.length > 0){
+                    setActiveSubCategory(response.data.data[0]._id);
+                    fetchCourses(response.data.data[0]._id);
+                }
             });
+    };
+
+    const fetchCourses = (subCategoryId) => {
+        axios.get(`http://localhost:3000/api/v1/subcategory/${subCategoryId}/courses`).
+        then((response) => {
+            setCourses(response.data.data)
+        });
     };
 
     const handleCategoryClick = (categoryId) => {
         setActiveCategory(categoryId);
         fetchSubcategories(categoryId);
+    };
+
+    const handleSubCategoryClick = (subCategoryId) => {
+        setActiveSubCategory(subCategoryId);
+        fetchCourses(subCategoryId);
     };
 
     return (
@@ -49,10 +65,10 @@ const CategorySection = () => {
             </div>
             <div className="flex space-x-4 scroll-hidden mt-4">
                 {subcategories.map((subcategory, index) => (
-                    <div key={index} className="flex-shrink-0 bg-white shadow-md rounded-full px-6 py-3 text-center">
+                    <button key={index} className={`flex-shrink-0 ${activeSubCategory === subcategory._id ? 'bg-gray-200' : 'bg-white'} shadow-md rounded-full px-6 py-3 text-center`} onClick={() => handleSubCategoryClick(subcategory._id)}>
                         <h3 className="font-semibold text-gray-700">{subcategory.name}</h3>
                         <p className="text-sm text-gray-500">Explore now</p>
-                    </div>
+                    </button>
                 ))}
             </div>
         </section>
