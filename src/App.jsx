@@ -5,18 +5,41 @@ import Courses from './Website/Courses';
 import HomePageSlider from './Website/HomePageSlider';
 import CategorySection from './Website/CategorySection';
 import axios from 'axios';
+import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import CourseDetails from './Website/CourseDetails';
 
 const App = () => {
     const [courses, setCourses] = useState([]);
 
     return (
-        <div className="bg-gray-50 font-sans">
-            <Menu />
-            <HomePageSlider />
-            <CategorySection setCourses={setCourses}/>
-            <Courses courses={courses} />
-            <Footer />
-        </div>
+        <Router>
+            <div className="bg-gray-50 font-sans">
+                <Menu />
+
+                <Routes>
+                    <Route 
+                        path='/' 
+                        element={
+                            <>
+                                <HomePageSlider />
+                                <CategorySection setCourses={setCourses}/>
+                                <Courses courses={courses} />
+                            </>
+                        }
+                    />
+                    <Route 
+                        path='/course/:id'
+                        element={
+                            <>
+                                <CourseDetails />
+                            </>
+                        }
+                    />
+                </Routes>
+
+                <Footer />
+            </div>
+        </Router>
     );
 };
 

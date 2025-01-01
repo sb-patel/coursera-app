@@ -4,7 +4,7 @@ const Menu = () => {
     return (
         <header className="bg-white shadow-md sticky top-0 z-50">
             <div className="container mx-auto flex items-center justify-between px-6 py-4">
-                <a href="#" className="text-2xl font-bold text-gray-800">Udemy</a>
+                <a href="#" className="text-2xl font-bold text-gray-800">Coursera</a>
                 <nav className="space-x-6">
                     <a href="#" className="text-gray-700 hover:text-gray-900">Categories</a>
                     <a href="#" className="text-gray-700 hover:text-gray-900">My Learning</a>
