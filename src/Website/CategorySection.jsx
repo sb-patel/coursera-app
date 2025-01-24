@@ -7,6 +7,7 @@ const CategorySection = ({ setCourses }) => {
     const [activeCategory, setActiveCategory] = useState(null);
     const [activeSubCategory, setActiveSubCategory] = useState(null);
     const categoryRef = useRef(null);
+    const [cache, setCache] = useState({});
 
     useEffect(() => {
         // Fetch categories from API
@@ -20,21 +21,42 @@ const CategorySection = ({ setCourses }) => {
             });
     }, []);
 
-    const fetchSubcategories = (categoryId) => {
-        axios.get(`http://localhost:3000/api/v1/category/${categoryId}/subcategories`)
-            .then((response) => {
-                setSubcategories(response.data.data);
-                if (response.data.data.length > 0) {
-                    setActiveSubCategory(response.data.data[0]._id);
-                    fetchCourses(response.data.data[0]._id);
-                }
-            });
+    const fetchSubcategories = async (categoryId) => {
+        try{
+            if(cache[categoryId]?.subcategories){
+                setSubcategories(cache[categoryId].subcategories);
+                setActiveSubCategory(cache[categoryId].activeSubCategory);
+                setCourses(cache[categoryId].courses);
+                return;
+            }
+
+            const response = await axios.get(`http://localhost:3000/api/v1/category/${categoryId}/subcategories`);
+
+            setSubcategories(response.data.data);
+            if (response.data.data.length > 0) {
+                setActiveSubCategory(response.data.data[0]._id);
+                
+                const courses = await fetchCourses(response.data.data[0]._id);
+                setCache((prevCache) => ({
+                    ...prevCache,
+                    [categoryId]: {
+                        subcategories: response.data.data,
+                        activeSubCategory: response.data.data[0]._id,
+                        courses: courses ? courses : []
+                    },
+                }));
+            }
+        }
+        catch(error){
+
+        }
     };
 
-    const fetchCourses = (subCategoryId) => {
+    const fetchCourses = async (subCategoryId) => {
         axios.get(`http://localhost:3000/api/v1/subcategory/${subCategoryId}/courses`)
             .then((response) => {
                 setCourses(response.data.data);
+                return response.data.data;
             });
     };
 
@@ -43,9 +65,18 @@ const CategorySection = ({ setCourses }) => {
         fetchSubcategories(categoryId);
     };
 
-    const handleSubCategoryClick = (subCategoryId) => {
+    const handleSubCategoryClick = async (subCategoryId, categoryId) => {
         setActiveSubCategory(subCategoryId);
-        fetchCourses(subCategoryId);
+        const courses = await fetchCourses(subCategoryId);
+
+        setCache((prevCache) => ({
+            ...prevCache,
+            [categoryId]: {
+                ...prevCache[categoryId], // Preserve existing data for the category
+                activeSubCategory: subCategoryId,
+                courses: courses ? courses : []
+            },
+        }));
     };
 
     const scrollContainer = (direction) => {
@@ -94,7 +125,7 @@ const CategorySection = ({ setCourses }) => {
                         <button
                             key={index}
                             className={`flex-shrink-0 ${activeSubCategory === subcategory._id ? 'bg-gray-800' : 'bg-gray-200'} shadow-md rounded-full px-6 py-3 text-center`}
-                            onClick={() => handleSubCategoryClick(subcategory._id)}
+                            onClick={() => handleSubCategoryClick(subcategory._id, subcategory.categoryId)}
                         >
                             <h3 className={`font-bold ${activeSubCategory === subcategory._id ? 'text-white' : 'text-gray-700'}`}>
                                 {subcategory.name}
