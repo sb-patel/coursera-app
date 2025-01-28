@@ -36,13 +36,13 @@ const CategorySection = ({ setCourses }) => {
             if (response.data.data.length > 0) {
                 setActiveSubCategory(response.data.data[0]._id);
                 
-                const courses = await fetchCourses(response.data.data[0]._id);
+                const subCategoryCourses = await fetchCourses(response.data.data[0]._id);
                 setCache((prevCache) => ({
                     ...prevCache,
                     [categoryId]: {
                         subcategories: response.data.data,
                         activeSubCategory: response.data.data[0]._id,
-                        courses: courses ? courses : []
+                        courses: subCategoryCourses ? subCategoryCourses : []
                     },
                 }));
             }
@@ -52,11 +52,16 @@ const CategorySection = ({ setCourses }) => {
         }
     };
 
-    const fetchCourses = async (subCategoryId) => {
-        axios.get(`http://localhost:3000/api/v1/subcategory/${subCategoryId}/courses`)
+    const fetchCourses = (subCategoryId) => {
+        return axios
+            .get(`http://localhost:3000/api/v1/subcategory/${subCategoryId}/courses`)
             .then((response) => {
-                setCourses(response.data.data);
-                return response.data.data;
+                setCourses(response.data.data); // Update the courses state
+                return response.data.data; // Return the courses data
+            })
+            .catch((error) => {
+                console.error("Error fetching courses:", error);
+                return []; // Return an empty array on error
             });
     };
 
